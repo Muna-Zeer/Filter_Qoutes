@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" type="text/css" href="style.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+      <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+      />
+      <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <title>Document</title>
+  </head>
+ 
+   
+      
+
+      <body>
+        <div class="navbar">
+          <a class="active" href="#"><i class="fa fa-fw fa-home"></i> Home</a>
+          <a href="#"><i class="fa fa-fw fa-envelope"></i> Contact</a>
+          <a href="#"><i class="fa fa-fw fa-user"></i> Login</a>
+          <div class="search-container">
+              <i class="fa fa-fw fa-search search-icon"></i>
+            <input
+              type="text"
+              id="filter-input"
+              placeholder="Enter filter string"
+            />
+          </div>
+        </div>
+
+        <h2 style="text-align: center; margin-bottom: 60px;margin-top:60px;">Popular Quotes</h2>
+
+        <div id="card-container">
+          <div class="list">
+              <p class="author"></p>
+            <p class="quto"></p>
+          </div>
+        </div>
+
+        <script>
+          const cardContainer = document.getElementById("card-container");
+          let filteredQuotes = [];
+          let quotes = [];
+
+          const renderQuotes = (quotes) => {
+            quotes.forEach((quote) => {
+              const card = document.createElement("div");
+              card.className = "list";
+
+              const authorElement = document.createElement("p");
+              authorElement.className = "author";
+              authorElement.textContent = `-${quote.author}`;
+
+              const quoteElement = document.createElement("p");
+              quoteElement.className = "quote";
+              quoteElement.textContent = quote.quote;
+
+
+              card.appendChild(authorElement);
+              card.appendChild(quoteElement);
+              cardContainer.appendChild(card);
+            });
+          };
+
+          const handleFilterChange = () => {
+            const filterInput = document.getElementById("filter-input");
+            const filterString = filterInput.value.toLowerCase();
+
+            // Filter the input based on the entered substring for both quote and author
+            const filteredQuotes = quotes.filter(
+              (quote) =>
+                quote.quote.toLowerCase().includes(filterString) ||
+                quote.author.toLowerCase().includes(filterString)
+            );
+
+            cardContainer.innerHTML = "";
+
+            if (filteredQuotes.length > 0) {
+              renderQuotes(filteredQuotes);
+            } else {
+              alert("No matching quotes found.");
+              renderQuotes(quotes);
+            }
+          };
+
+          function fetchQuotes() {
+            fetch("https://dummyjson.com/quotes")
+              .then((response) => response.json())
+              .then((data) => {
+                quotes = data.quotes; // Assign the fetched data to quotes array
+
+                // Store the quotes data in a separate variable for filtering
+                filteredQuotes = quotes;
+
+                const filterInput = document.getElementById("filter-input");
+                filterInput.addEventListener("input", handleFilterChange);
+
+                renderQuotes(quotes);
+
+                handleFilterChange();
+              })
+              .catch((error) => {
+                console.error("Error:", error);
+                cardContainer.innerHTML = "Failed to fetch quotes.";
+              });
+          }
+
+          fetchQuotes();
+        </script>
+      </body>
+    </html>
+
